@@ -1,70 +1,138 @@
-# Getting Started with Create React App
+import interceptorInstance from "../../../../../actions/interceptors";
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+export const getAllRecords = async (projectId, page, search, columName, sortOrder, limit) => {
+    let baseQueryString = `/projects/1/deposite-schedule`;
+    if (page > 0) baseQueryString += `?page=${page}`;
+    if (sortOrder) baseQueryString += `&sortOrder=${sortOrder}`
+    if (columName) baseQueryString += `&sortBy=${columName}`;
+    if (limit) baseQueryString += `&limit=${limit}`;
+    if (search?.length > 0) baseQueryString += `&search=${search}`;
+    
+    try {
+        const response = await interceptorInstance.get(baseQueryString);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
-## Available Scripts
+export const getAllItemsRecords = async (projectId, page, search, columName, sortOrder, limit) => {
+    let baseQueryString = `/projects/1/deposit-schedule-items`;
+    if (page > 0) baseQueryString += `?page=${page}`;
+    if (sortOrder) baseQueryString += `&sortOrder=${sortOrder}`
+    if (columName) baseQueryString += `&sortBy=${columName}`;
+    if (limit) baseQueryString += `&limit=${limit}`;
+    if (search?.length > 0) baseQueryString += `&search=${search}`;
+    
+    try {
+        const response = await interceptorInstance.get(baseQueryString);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
-In the project directory, you can run:
+export const getDepositScheduleById = async (project_id, deposit_schedule_id) => {
+    const endpoint = `/projects/1/deposite-schedule/${deposit_schedule_id}`;  
+    try {
+        const response = await interceptorInstance.get(endpoint);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
 
-### `npm start`
+export const updateDepositSchedule = async (project_id, deposit_schedule_id, deposit_number, amount, percentage, deposit_to, substract_first_deposit_amount, prevent_changes, duration_in_days, duration_in_months) => {
+    let payloadBody = {
+        deposit_number: deposit_number,
+        amount: amount,
+        percentage: percentage,
+        deposit_to: deposit_to,
+        substract_first_deposit_amount: substract_first_deposit_amount,
+        prevent_changes: prevent_changes,
+        duration_in_days: duration_in_days,
+        duration_in_months: duration_in_months
+    };
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+    try {
+        const response = await interceptorInstance.put(`/projects/${project_id}/deposit-schedules/${deposit_schedule_id}`, payloadBody);
+        return response;
+    } catch (error) {
+        return error;
+    }
+};
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+export const addNewRecord = async (formData) => {
+  try {
+    const response = await interceptorInstance.post(`/projects/1/deposite-schedule`, formData);
+    return response.data;
+  } catch (error) {
+    console.error('Error submitting the form:', error.response?.data || error.message);
+    throw error;
+  }
+};
 
-### `npm test`
+export const getRecordDetails = async (id, limit) => {
+    try {
+        const response = await interceptorInstance.get(`/events/?project_id=${id}&limit=${limit}`);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+export const updateRecord = async (template_name,template_description,aps_document, subject, body ,project_id,to_address, cc_address, bcc_address, additional_emails) => {
+    let payloadBody = {
+        template_name: template_name,
+        template_description: template_description,
+        template_type: "email",
+        aps_document: aps_document,
+        project_id: parseInt(project_id),
+        subject: subject,
+        body: body,
+        attachments: [],
+        recipients: {
+            "to_address": to_address ? to_address:[],
+            "cc_address": cc_address ? cc_address:[],
+            "bcc_address": bcc_address ? bcc_address: [],
+            "additional_emails": additional_emails ? additional_emails : []
+        }
+    }
 
-### `npm run build`
+    try {
+        const response = await interceptorInstance.put(`/email/templates`, payloadBody);
+       return response;
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    } catch (error) {
+        return error;
+    }
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export const deleteRecord = async (template_name,template_description,aps_document, subject, body ,project_id,to_address, cc_address, bcc_address, additional_emails) => {
 
-### `npm run eject`
+    let payloadBody = {
+        template_name: template_name,
+        template_description: template_description,
+        template_type: "email",
+        aps_document: aps_document,
+        project_id: parseInt(project_id),
+        subject: subject,
+        body: body,
+        attachments: [],
+        recipients: {
+            "to_address": to_address ? to_address:[],
+            "cc_address": cc_address ? cc_address:[],
+            "bcc_address": bcc_address ? bcc_address: [],
+            "additional_emails": additional_emails ? additional_emails : []
+        }
+    }
+   
+    try {
+        const response = await interceptorInstance.delete(`/email/templates`, payloadBody);
+       return response;
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    } catch (error) {
+        return error;
+    }
+}
