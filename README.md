@@ -1,7 +1,7 @@
 import interceptorInstance from "../../../../../actions/interceptors";
 
 export const getAllRecords = async (projectId, page, search, columName, sortOrder, limit) => {
-    let baseQueryString = `/projects/1/deposite-schedule`;
+    let baseQueryString = `/projects/1/deposite-schedule`; 
     if (page > 0) baseQueryString += `?page=${page}`;
     if (sortOrder) baseQueryString += `&sortOrder=${sortOrder}`
     if (columName) baseQueryString += `&sortBy=${columName}`;
